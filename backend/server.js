@@ -3,11 +3,12 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const { isDBReady } = require('./config/db');
 const clientsRouter = require('./routes/clients');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const CLIENT_ORIGINS = (process.env.CLIENT_ORIGIN || 'http://localhost:3000')
+const CLIENT_ORIGINS = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
@@ -18,6 +19,14 @@ app.use(
   })
 );
 app.use(express.json());
+
+// Sur Vercel (serverless), reconnecte si besoin à la première requête
+app.use(async (req, res, next) => {
+  if (!isDBReady() && process.env.MONGODB_URI) {
+    await connectDB();
+  }
+  next();
+});
 
 app.get('/', (req, res) => {
   res.json({

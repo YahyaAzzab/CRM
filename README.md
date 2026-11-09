@@ -8,6 +8,7 @@ Application CRM full-stack pour gérer des clients (prospect / client / inactif)
 - **Express** — API REST (backend)
 - **React + Vite** — interface (frontend)
 - **Node.js** — runtime
+- **Vercel** — déploiement
 
 ## Structure
 
@@ -15,7 +16,7 @@ Application CRM full-stack pour gérer des clients (prospect / client / inactif)
 CRM/
 ├── backend/      # API Express + MongoDB
 ├── frontend/     # Application React (Vite)
-├── docs/         # Guide Atlas
+├── docs/         # Guides Atlas + Vercel
 ├── postman/      # Collection Postman
 └── README.md
 ```
@@ -29,11 +30,11 @@ CRM/
 | 3 | MongoDB Atlas + collection Postman | ✅ |
 | 4 | Interface React + animations | ✅ |
 | 5 | Branchement React ↔ API | ✅ |
-| 6 | Déploiement Vercel + livrables | ⏳ |
+| 6 | Déploiement Vercel + livrables | ✅ |
 
 ## Lancement local
 
-### 1. Variables d’environnement
+### Variables
 
 `backend/.env` :
 
@@ -49,42 +50,43 @@ MONGODB_URI=mongodb+srv://crm_user:MOT_DE_PASSE@crm-cluster.XXXX.mongodb.net/crm
 VITE_API_URL=http://localhost:4000
 ```
 
-Guide Atlas : [docs/ATLAS_SETUP.md](docs/ATLAS_SETUP.md)
-
-### 2. Backend
+### Commandes
 
 ```bash
-cd backend
-npm install
-npm run dev
+# Terminal 1
+cd backend && npm install && npm run dev
+
+# Terminal 2
+cd frontend && npm install && npm run dev
 ```
 
-→ [http://localhost:4000](http://localhost:4000)
+- API : [http://localhost:4000](http://localhost:4000)
+- UI : [http://localhost:5173](http://localhost:5173)
 
-### 3. Frontend
+## Documentation
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-→ [http://localhost:5173](http://localhost:5173)
+- Atlas : [docs/ATLAS_SETUP.md](docs/ATLAS_SETUP.md)
+- Vercel : [docs/VERCEL_DEPLOY.md](docs/VERCEL_DEPLOY.md)
+- Postman : [postman/CRM_API.postman_collection.json](postman/CRM_API.postman_collection.json)
 
 ## API
 
 | Méthode | URL | Action |
 |---------|-----|--------|
-| GET | `/` | Santé de l’API |
+| GET | `/` | Santé |
 | GET | `/api/clients` | Lister |
 | POST | `/api/clients` | Créer |
 | PUT | `/api/clients/:id` | Modifier |
 | DELETE | `/api/clients/:id` | Supprimer |
 
-Collection Postman : [postman/CRM_API.postman_collection.json](postman/CRM_API.postman_collection.json)
+## Livrables oral
 
-## Comptes
+1. Lien GitHub du dépôt
+2. Lien Vercel frontend + lien Vercel API
+3. Captures Postman (POST 201 + erreur 400/409)
+4. Capture Atlas Data Explorer (sans mot de passe)
+5. Ce README
 
-- [GitHub](https://github.com)
-- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register)
-- [Vercel](https://vercel.com/signup) — Continue with GitHub
+## Repo
+
+https://github.com/YahyaAzzab/CRM
