@@ -29,7 +29,7 @@ CRM/
 |-------|---------|--------|
 | 1 | Socle projet + GitHub | ✅ |
 | 2 | Backend Express + API clients | ✅ |
-| 3 | MongoDB Atlas (variables `.env`) | ⏳ |
+| 3 | MongoDB Atlas + collection Postman | ✅ |
 | 4 | Interface React + animations | ⏳ |
 | 5 | Branchement React ↔ API | ⏳ |
 | 6 | Déploiement Vercel + livrables | ⏳ |
@@ -55,7 +55,7 @@ Ouvre ensuite : [http://localhost:4000](http://localhost:4000)
 | PUT | `/api/clients/:id` | Modifier un client |
 | DELETE | `/api/clients/:id` | Supprimer un client |
 
-> **Étape 3** : copie `.env.example` → `.env` et colle ton `MONGODB_URI` Atlas. Sans cette variable, le serveur démarre mais les routes clients ne peuvent pas lire/écrire la base.
+> **MongoDB** : suis [docs/ATLAS_SETUP.md](docs/ATLAS_SETUP.md), colle ton `MONGODB_URI` dans `backend/.env`, puis importe [postman/CRM_API.postman_collection.json](postman/CRM_API.postman_collection.json) dans Postman.
 
 ## Comptes nécessaires
 

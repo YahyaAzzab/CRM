@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
 
+function isUriReady(uri) {
+  return Boolean(uri) && !uri.includes('<db_password>') && !uri.includes('xxxxx');
+}
+
 async function connectDB() {
   const uri = process.env.MONGODB_URI;
 
-  if (!uri || uri.includes('<db_password>') || uri.includes('xxxxx')) {
+  if (!isUriReady(uri)) {
     console.warn(
-      '⚠️  MONGODB_URI manquant ou placeholder. Ajoute ton URI Atlas dans backend/.env (étape 3).'
+      '⚠️  MONGODB_URI manquant. Suis docs/ATLAS_SETUP.md puis renseigne backend/.env'
     );
     return false;
   }
@@ -20,4 +24,9 @@ async function connectDB() {
   }
 }
 
+function isDBReady() {
+  return mongoose.connection.readyState === 1;
+}
+
 module.exports = connectDB;
+module.exports.isDBReady = isDBReady;

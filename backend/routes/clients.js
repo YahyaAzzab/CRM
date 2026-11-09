@@ -1,7 +1,18 @@
 const express = require('express');
 const Client = require('../models/Client');
+const { isDBReady } = require('../config/db');
 
 const router = express.Router();
+
+router.use((req, res, next) => {
+  if (!isDBReady()) {
+    return res.status(503).json({
+      message:
+        'Base MongoDB non connectée. Ajoute MONGODB_URI dans backend/.env (voir docs/ATLAS_SETUP.md).',
+    });
+  }
+  next();
+});
 
 function envoyerErreur(res, error) {
   if (error.name === 'ValidationError') {

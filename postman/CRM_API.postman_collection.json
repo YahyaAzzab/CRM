@@ -1,0 +1,104 @@
+{
+  "info": {
+    "name": "CRM API",
+    "description": "Tests CRUD clients — TP CRM MERN",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000"
+    },
+    {
+      "key": "clientId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Santé API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/"
+      }
+    },
+    {
+      "name": "Créer un client (POST 201)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const data = pm.response.json();",
+              "  pm.collectionVariables.set('clientId', data._id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nom\": \"Alice Martin\",\n  \"email\": \"alice.martin@exemple.com\",\n  \"entreprise\": \"NovaTech\",\n  \"telephone\": \"0601020304\",\n  \"statut\": \"prospect\"\n}"
+        },
+        "url": "{{baseUrl}}/api/clients"
+      }
+    },
+    {
+      "name": "Lister les clients (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/clients"
+      }
+    },
+    {
+      "name": "Modifier statut (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"statut\": \"client\"\n}"
+        },
+        "url": "{{baseUrl}}/api/clients/{{clientId}}"
+      }
+    },
+    {
+      "name": "Erreur statut invalide (400)",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"statut\": \"urgent\"\n}"
+        },
+        "url": "{{baseUrl}}/api/clients/{{clientId}}"
+      }
+    },
+    {
+      "name": "Email doublon (409)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nom\": \"Doublon\",\n  \"email\": \"alice.martin@exemple.com\"\n}"
+        },
+        "url": "{{baseUrl}}/api/clients"
+      }
+    },
+    {
+      "name": "Supprimer un client (DELETE)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/api/clients/{{clientId}}"
+      }
+    }
+  ]
+}
