@@ -11,6 +11,7 @@ frontend/.env
 # Build outputs
 frontend/build/
 frontend/dist/
+dist/
 backend/dist/
 
 # Logs & debug

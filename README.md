@@ -19,9 +19,22 @@ CRM/
 │   ├── routes/clients.js
 │   ├── server.js
 │   └── .env.example
-├── frontend/     # Application React (étape 4)
+├── frontend/     # Application React (Vite)
+├── docs/         # Guide Atlas
+├── postman/      # Collection Postman
 └── README.md
 ```
+
+## Frontend — lancement local
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Ouvre : [http://localhost:5173](http://localhost:5173)
+
 
 ## Progression
 
@@ -30,7 +43,7 @@ CRM/
 | 1 | Socle projet + GitHub | ✅ |
 | 2 | Backend Express + API clients | ✅ |
 | 3 | MongoDB Atlas + collection Postman | ✅ |
-| 4 | Interface React + animations | ⏳ |
+| 4 | Interface React + animations | ✅ |
 | 5 | Branchement React ↔ API | ⏳ |
 | 6 | Déploiement Vercel + livrables | ⏳ |
 
