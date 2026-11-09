@@ -7,8 +7,7 @@ const router = express.Router();
 router.use((req, res, next) => {
   if (!isDBReady()) {
     return res.status(503).json({
-      message:
-        'Base MongoDB non connectée. Ajoute MONGODB_URI dans backend/.env (voir docs/ATLAS_SETUP.md).',
+      message: 'Base MongoDB non connectée. Vérifie MONGODB_URI dans les variables d’environnement.',
     });
   }
   next();

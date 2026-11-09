@@ -8,9 +8,7 @@ async function connectDB() {
   const uri = process.env.MONGODB_URI;
 
   if (!isUriReady(uri)) {
-    console.warn(
-      '⚠️  MONGODB_URI manquant. Suis docs/ATLAS_SETUP.md puis renseigne backend/.env'
-    );
+    console.warn('⚠️  MONGODB_URI manquant. Renseigne backend/.env');
     return false;
   }
 

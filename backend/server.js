@@ -16,7 +16,6 @@ const CLIENT_ORIGINS = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
 app.use(
   cors({
     origin(origin, callback) {
-      // Postman / same-server : pas d'Origin
       if (!origin) {
         return callback(null, true);
       }
@@ -34,7 +33,6 @@ app.use(
 );
 app.use(express.json());
 
-// Sur Vercel (serverless), reconnecte si besoin à la première requête
 app.use(async (req, res, next) => {
   if (!isDBReady() && process.env.MONGODB_URI) {
     await connectDB();

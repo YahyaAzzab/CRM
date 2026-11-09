@@ -1,47 +1,66 @@
 # CRM MERN
 
-Application CRM full-stack pour gérer des clients (prospect / client / inactif).
+Application web de gestion de la relation client (CRM) : ajouter, rechercher, modifier le statut et supprimer des contacts.
+
+## Démo en ligne
+
+| Rôle | URL | Description |
+|------|-----|-------------|
+| **Interface (frontend)** | [https://crm-5fv7.vercel.app](https://crm-5fv7.vercel.app/) | Application React utilisée par l’utilisateur pour gérer les clients |
+| **API (backend)** | [https://crm-one-ashen-13.vercel.app](https://crm-one-ashen-13.vercel.app/) | Serveur Express qui expose les routes REST et parle à MongoDB |
+| **Clients (JSON)** | [https://crm-one-ashen-13.vercel.app/api/clients](https://crm-one-ashen-13.vercel.app/api/clients) | Liste des clients renvoyée par l’API |
+| **Code source** | [https://github.com/YahyaAzzab/CRM](https://github.com/YahyaAzzab/CRM) | Dépôt GitHub du projet |
 
 ## Stack
 
 - **MongoDB Atlas** — base de données cloud
-- **Express** — API REST (backend)
-- **React + Vite** — interface (frontend)
-- **Node.js** — runtime
-- **Vercel** — déploiement
+- **Express / Node.js** — API REST
+- **React (Vite)** — interface
+- **Vercel** — hébergement frontend + backend
+- **Framer Motion** — animations UI
 
-## Structure
+## Fonctionnalités
+
+- Créer un client (nom, email, entreprise, téléphone, statut)
+- Lister et rechercher (nom / email / entreprise)
+- Filtrer par statut : prospect, client, inactif
+- Modifier le statut
+- Supprimer un client
+- Compteurs animés par statut
+- Gestion des erreurs API (ex. email déjà utilisé → 409)
+
+## Structure du projet
 
 ```
 CRM/
-├── backend/      # API Express + MongoDB
-├── frontend/     # Application React (Vite)
-├── docs/         # Guides Atlas + Vercel
-├── postman/      # Collection Postman
+├── backend/     # API Express + modèle Client + MongoDB
+├── frontend/    # Interface React
+├── postman/     # Collection de tests API
 └── README.md
 ```
 
-## Progression
+## Lancement en local
 
-| Étape | Contenu | Statut |
-|-------|---------|--------|
-| 1 | Socle projet + GitHub | ✅ |
-| 2 | Backend Express + API clients | ✅ |
-| 3 | MongoDB Atlas + collection Postman | ✅ |
-| 4 | Interface React + animations | ✅ |
-| 5 | Branchement React ↔ API | ✅ |
-| 6 | Déploiement Vercel + livrables | ✅ |
+### Prérequis
 
-## Lancement local
+- Node.js
+- Un cluster MongoDB Atlas + URI de connexion
 
-### Variables
+### Variables d’environnement
+
+Copier les exemples puis renseigner les valeurs :
+
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+```
 
 `backend/.env` :
 
 ```env
 PORT=4000
 CLIENT_ORIGIN=http://localhost:5173
-MONGODB_URI=mongodb+srv://crm_user:MOT_DE_PASSE@crm-cluster.XXXX.mongodb.net/crm?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://...
 ```
 
 `frontend/.env` :
@@ -50,43 +69,46 @@ MONGODB_URI=mongodb+srv://crm_user:MOT_DE_PASSE@crm-cluster.XXXX.mongodb.net/crm
 VITE_API_URL=http://localhost:4000
 ```
 
-### Commandes
+### Démarrage
 
 ```bash
-# Terminal 1
-cd backend && npm install && npm run dev
+# Terminal 1 — API
+cd backend
+npm install
+npm run dev
 
-# Terminal 2
-cd frontend && npm install && npm run dev
+# Terminal 2 — Interface
+cd frontend
+npm install
+npm run dev
 ```
 
-- API : [http://localhost:4000](http://localhost:4000)
-- UI : [http://localhost:5173](http://localhost:5173)
+- Frontend local : [http://localhost:5173](http://localhost:5173)
+- API locale : [http://localhost:4000](http://localhost:4000)
 
-## Documentation
+## API REST
 
-- Atlas : [docs/ATLAS_SETUP.md](docs/ATLAS_SETUP.md)
-- Vercel : [docs/VERCEL_DEPLOY.md](docs/VERCEL_DEPLOY.md)
-- Postman : [postman/CRM_API.postman_collection.json](postman/CRM_API.postman_collection.json)
+Base URL prod : `https://crm-one-ashen-13.vercel.app`
 
-## API
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| `GET` | `/` | Santé de l’API |
+| `GET` | `/api/clients` | Liste des clients |
+| `GET` | `/api/clients/:id` | Détail d’un client |
+| `POST` | `/api/clients` | Créer un client |
+| `PUT` | `/api/clients/:id` | Modifier un client |
+| `DELETE` | `/api/clients/:id` | Supprimer un client |
 
-| Méthode | URL | Action |
-|---------|-----|--------|
-| GET | `/` | Santé |
-| GET | `/api/clients` | Lister |
-| POST | `/api/clients` | Créer |
-| PUT | `/api/clients/:id` | Modifier |
-| DELETE | `/api/clients/:id` | Supprimer |
+Collection Postman : [`postman/CRM_API.postman_collection.json`](postman/CRM_API.postman_collection.json)
 
-## Livrables oral
+## Déploiement
 
-1. Lien GitHub du dépôt
-2. Lien Vercel frontend + lien Vercel API
-3. Captures Postman (POST 201 + erreur 400/409)
-4. Capture Atlas Data Explorer (sans mot de passe)
-5. Ce README
+Deux projets Vercel partagent le même dépôt GitHub :
 
-## Repo
+1. **Backend** — Root Directory `backend`  
+   Variables : `MONGODB_URI`, `CLIENT_ORIGIN=https://crm-5fv7.vercel.app`
+2. **Frontend** — Root Directory `frontend`  
+   Variable : `VITE_API_URL=https://crm-one-ashen-13.vercel.app`  
+   Build : `npm run build` · Output : `dist`
 
-https://github.com/YahyaAzzab/CRM
+Chaque `git push` sur `main` redéploie automatiquement.

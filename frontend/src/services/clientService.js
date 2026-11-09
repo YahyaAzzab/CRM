@@ -12,9 +12,7 @@ async function request(path, options = {}) {
       ...options,
     });
   } catch {
-    throw new Error(
-      `Impossible de joindre l'API (${API_URL}). Vérifie que le backend tourne et que VITE_API_URL est correct, puis redéploie le frontend.`
-    );
+    throw new Error(`Impossible de joindre l'API (${API_URL}).`);
   }
 
   let data = null;
