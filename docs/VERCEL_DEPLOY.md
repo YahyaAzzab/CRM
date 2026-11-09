@@ -26,11 +26,23 @@ Tu créeras **2 projets** Vercel à partir du **même** dépôt GitHub.
 7. Deploy
 8. Copie l’URL frontend (ex. `https://crm-frontend-xxx.vercel.app`)
 
-## Partie 3 — CORS
+## Partie 3 — CORS + redéploiement (important)
 
 1. Projet `crm-backend` → Settings → Environment Variables
-2. Mets à jour `CLIENT_ORIGIN` = URL exacte du frontend (sans `/` final)
-3. Deployments → Redeploy le backend
+2. Mets à jour `CLIENT_ORIGIN` = URL exacte du frontend (sans `/` final)  
+   Ex. `https://crm-frontend-xxx.vercel.app`
+3. **Redeploy le backend** (Deployments → ⋮ → Redeploy)
+4. **Redeploy aussi le frontend** après avoir ajouté `VITE_API_URL`  
+   (Vite lit les variables **au build**, pas après)
+
+### Si tu vois « Failed to fetch »
+
+| Vérification | Attendu |
+|--------------|---------|
+| Ouvre l’URL backend dans le navigateur | JSON `{ "message": "API CRM opérationnelle" }` |
+| `VITE_API_URL` | URL backend **sans** `/` final, **sans** `/api` |
+| `CLIENT_ORIGIN` | URL frontend exacte, **sans** `/` final |
+| Après chaque changement de variable | **Redeploy** du projet concerné |
 
 ## Partie 4 — Vérification
 

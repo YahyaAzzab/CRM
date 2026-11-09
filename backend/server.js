@@ -10,12 +10,26 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const CLIENT_ORIGINS = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
   .split(',')
-  .map((origin) => origin.trim())
+  .map((origin) => origin.trim().replace(/\/$/, ''))
   .filter(Boolean);
 
 app.use(
   cors({
-    origin: CLIENT_ORIGINS.length === 1 ? CLIENT_ORIGINS[0] : CLIENT_ORIGINS,
+    origin(origin, callback) {
+      // Postman / same-server : pas d'Origin
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      const normalized = origin.replace(/\/$/, '');
+      const allowed =
+        CLIENT_ORIGINS.includes(normalized) ||
+        normalized === 'http://localhost:5173' ||
+        normalized === 'http://localhost:3000' ||
+        normalized.endsWith('.vercel.app');
+
+      return callback(null, allowed);
+    },
   })
 );
 app.use(express.json());
