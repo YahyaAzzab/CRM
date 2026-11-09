@@ -47,6 +47,76 @@ select {
   overflow: hidden;
 }
 
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 40%, #102820 0%, #071412 58%, #040a09 100%);
+  overflow: hidden;
+}
+
+.splash-glow {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.splash-glow-a {
+  width: 420px;
+  height: 420px;
+  background: #1f6f5b;
+  opacity: 0.4;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.splash-glow-b {
+  width: 280px;
+  height: 280px;
+  background: #7a5c16;
+  opacity: 0.22;
+  bottom: 12%;
+  right: 18%;
+}
+
+.splash-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.85rem;
+  padding: 1.5rem;
+}
+
+.splash-brand {
+  margin: 0.4rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.splash-tag {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.splash-bar {
+  width: 120px;
+  height: 3px;
+  margin-top: 0.75rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #3ddc97, #f4b942);
+  transform-origin: left center;
+}
+
 .ambient {
   position: absolute;
   border-radius: 999px;
@@ -92,15 +162,10 @@ select {
   align-items: center;
 }
 
-.brand-mark {
-  width: 46px;
-  height: 46px;
+.brand svg {
+  flex-shrink: 0;
   border-radius: 14px;
-  background:
-    radial-gradient(circle at 30% 30%, #f4b942 0 18%, transparent 19%),
-    linear-gradient(145deg, #12352e, #0b1f1c);
-  border: 1px solid var(--line);
-  box-shadow: inset 0 0 0 1px rgba(61, 220, 151, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
 }
 
 .brand-name {
