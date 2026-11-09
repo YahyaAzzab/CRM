@@ -1,26 +1,33 @@
 import { motion } from 'framer-motion';
 
 const ITEMS = [
-  { key: 'prospect', label: 'Prospects' },
-  { key: 'client', label: 'Clients' },
-  { key: 'inactif', label: 'Inactifs' },
+  { key: 'tous', label: 'Total', colorClass: 'stat-total' },
+  { key: 'prospect', label: 'Prospects', colorClass: 'stat-prospect' },
+  { key: 'client', label: 'Clients', colorClass: 'stat-client' },
+  { key: 'inactif', label: 'Inactifs', colorClass: 'stat-inactif' },
 ];
 
-export default function StatsBar({ clients }) {
-  const counts = ITEMS.reduce((acc, item) => {
-    acc[item.key] = clients.filter((c) => c.statut === item.key).length;
-    return acc;
-  }, {});
+export default function StatsBar({ clients, filtreStatut, onFiltre }) {
+  const counts = {
+    tous: clients.length,
+    prospect: clients.filter((c) => c.statut === 'prospect').length,
+    client: clients.filter((c) => c.statut === 'client').length,
+    inactif: clients.filter((c) => c.statut === 'inactif').length,
+  };
 
   return (
-    <div className="stats">
+    <div className="stats stats-4">
       {ITEMS.map((item, index) => (
-        <motion.div
+        <motion.button
           key={item.key}
-          className={`stat stat-${item.key}`}
+          type="button"
+          className={`stat ${item.colorClass} ${filtreStatut === item.key ? 'stat-active' : ''}`}
+          onClick={() => onFiltre(item.key)}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 * index, duration: 0.4 }}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.98 }}
         >
           <span className="stat-label">{item.label}</span>
           <motion.span
@@ -32,7 +39,7 @@ export default function StatsBar({ clients }) {
           >
             {counts[item.key]}
           </motion.span>
-        </motion.div>
+        </motion.button>
       ))}
     </div>
   );

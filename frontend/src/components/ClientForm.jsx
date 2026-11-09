@@ -7,6 +7,7 @@ const EMPTY = {
   entreprise: '',
   telephone: '',
   statut: 'prospect',
+  notes: '',
 };
 
 export default function ClientForm({ onAjouter, busy }) {
@@ -87,6 +88,18 @@ export default function ClientForm({ onAjouter, busy }) {
           <option value="client">Client</option>
           <option value="inactif">Inactif</option>
         </select>
+      </label>
+
+      <label>
+        Notes
+        <textarea
+          name="notes"
+          value={form.notes}
+          onChange={handleChange}
+          rows={2}
+          maxLength={500}
+          placeholder="Contexte commercial…"
+        />
       </label>
 
       <motion.button

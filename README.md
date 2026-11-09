@@ -21,12 +21,12 @@ Application web de gestion de la relation client (CRM) : ajouter, rechercher, mo
 
 ## Fonctionnalités
 
-- Créer un client (nom, email, entreprise, téléphone, statut)
-- Lister et rechercher (nom / email / entreprise)
-- Filtrer par statut : prospect, client, inactif
-- Modifier le statut
-- Supprimer un client
-- Compteurs animés par statut
+- Créer / modifier / supprimer un client
+- Champs : nom, email, entreprise, téléphone, statut, notes
+- Recherche, filtres par statut (stats cliquables), tri
+- Activité récente
+- Copier l’email, export CSV
+- Intro animée + micro-interactions
 - Gestion des erreurs API (ex. email déjà utilisé → 409)
 
 ## Structure du projet

@@ -4,6 +4,8 @@ import Header from './components/Header';
 import StatsBar from './components/StatsBar';
 import ClientForm from './components/ClientForm';
 import ClientList from './components/ClientList';
+import ActivityFeed from './components/ActivityFeed';
+import EditClientModal from './components/EditClientModal';
 import Toast from './components/Toast';
 import LoadingGrid from './components/LoadingGrid';
 import Splash from './components/Splash';
@@ -14,14 +16,40 @@ import {
   updateClient,
 } from './services/clientService';
 
+function exporterCSV(clients) {
+  const headers = ['nom', 'email', 'entreprise', 'telephone', 'statut', 'notes'];
+  const lines = [
+    headers.join(','),
+    ...clients.map((client) =>
+      headers
+        .map((key) => {
+          const value = String(client[key] ?? '').replaceAll('"', '""');
+          return `"${value}"`;
+        })
+        .join(',')
+    ),
+  ];
+
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `clients-crm-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [clients, setClients] = useState([]);
   const [recherche, setRecherche] = useState('');
   const [filtreStatut, setFiltreStatut] = useState('tous');
+  const [tri, setTri] = useState('recent');
   const [busy, setBusy] = useState(false);
+  const [editBusy, setEditBusy] = useState(false);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
+  const [clientEnEdition, setClientEnEdition] = useState(null);
 
   const total = useMemo(() => clients.length, [clients]);
 
@@ -89,6 +117,20 @@ export default function App() {
     }
   }
 
+  async function handleSaveEdit(id, data) {
+    setEditBusy(true);
+    try {
+      const maj = await updateClient(id, data);
+      setClients((prev) => prev.map((client) => (client._id === id ? maj : client)));
+      setClientEnEdition(null);
+      showToast(`${maj.nom} a été modifié`);
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setEditBusy(false);
+    }
+  }
+
   async function handleSupprimer(id) {
     const cible = clients.find((client) => client._id === id);
     if (!cible) return;
@@ -104,6 +146,24 @@ export default function App() {
       setClients(snapshot);
       showToast(error.message, 'error');
     }
+  }
+
+  async function handleCopyEmail(email) {
+    try {
+      await navigator.clipboard.writeText(email);
+      showToast('Email copié');
+    } catch {
+      showToast('Impossible de copier l’email', 'error');
+    }
+  }
+
+  function handleExport() {
+    if (clients.length === 0) {
+      showToast('Aucun client à exporter', 'error');
+      return;
+    }
+    exporterCSV(clients);
+    showToast('Export CSV téléchargé');
   }
 
   return (
@@ -140,7 +200,11 @@ export default function App() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.12, duration: 0.5 }}
               >
-                <StatsBar clients={clients} />
+                <StatsBar
+                  clients={clients}
+                  filtreStatut={filtreStatut}
+                  onFiltre={setFiltreStatut}
+                />
               </motion.div>
 
               <motion.p
@@ -151,7 +215,7 @@ export default function App() {
               >
                 {loading
                   ? 'Chargement des contacts…'
-                  : `${total} contact${total > 1 ? 's' : ''} synchronisé${total > 1 ? 's' : ''} avec l’API.`}
+                  : `${total} contact${total > 1 ? 's' : ''} · clique une stat pour filtrer · export CSV disponible`}
               </motion.p>
 
               <motion.div
@@ -160,7 +224,10 @@ export default function App() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.28, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
               >
-                <ClientForm onAjouter={handleAjouter} busy={busy} />
+                <div className="sidebar">
+                  <ClientForm onAjouter={handleAjouter} busy={busy} />
+                  <ActivityFeed clients={clients} />
+                </div>
 
                 {loading ? (
                   <section className="panel list-panel">
@@ -175,16 +242,33 @@ export default function App() {
                     clients={clients}
                     recherche={recherche}
                     filtreStatut={filtreStatut}
+                    tri={tri}
                     onRecherche={setRecherche}
                     onFiltre={setFiltreStatut}
+                    onTri={setTri}
                     onStatut={handleStatut}
+                    onEdit={setClientEnEdition}
                     onSupprimer={handleSupprimer}
+                    onCopyEmail={handleCopyEmail}
+                    onExport={handleExport}
                   />
                 )}
               </motion.div>
             </div>
 
             <Toast toast={toast} />
+
+            <AnimatePresence>
+              {clientEnEdition && (
+                <EditClientModal
+                  key={clientEnEdition._id}
+                  client={clientEnEdition}
+                  busy={editBusy}
+                  onClose={() => setClientEnEdition(null)}
+                  onSave={handleSaveEdit}
+                />
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>

@@ -36,6 +36,12 @@ const clientSchema = new mongoose.Schema(
       },
       default: 'prospect',
     },
+    notes: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: [500, 'Les notes ne peuvent pas dépasser 500 caractères'],
+    },
   },
   {
     timestamps: true,
