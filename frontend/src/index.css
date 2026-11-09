@@ -339,6 +339,18 @@ select:focus {
   color: var(--muted);
 }
 
+.skeleton-card {
+  height: 138px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03),
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.03)
+  );
+}
+
 .toast-stack {
   position: fixed;
   right: 1rem;

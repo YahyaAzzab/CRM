@@ -1,20 +1,23 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Header from './components/Header';
 import StatsBar from './components/StatsBar';
 import ClientForm from './components/ClientForm';
 import ClientList from './components/ClientList';
 import Toast from './components/Toast';
-import { MOCK_CLIENTS } from './data/mockClients';
-
-function creerId() {
-  return `mock-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
-}
+import LoadingGrid from './components/LoadingGrid';
+import {
+  createClient,
+  deleteClient,
+  getClients,
+  updateClient,
+} from './services/clientService';
 
 export default function App() {
-  const [clients, setClients] = useState(MOCK_CLIENTS);
+  const [clients, setClients] = useState([]);
   const [recherche, setRecherche] = useState('');
   const [filtreStatut, setFiltreStatut] = useState('tous');
   const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
 
   const total = useMemo(() => clients.length, [clients]);
@@ -24,40 +27,58 @@ export default function App() {
     setToast({ id, message, type });
     window.setTimeout(() => {
       setToast((current) => (current?.id === id ? null : current));
-    }, 2800);
+    }, 3000);
   }
+
+  async function chargerClients() {
+    setLoading(true);
+    try {
+      const data = await getClients();
+      setClients(data);
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    chargerClients();
+  }, []);
 
   async function handleAjouter(data) {
     setBusy(true);
-    await new Promise((resolve) => setTimeout(resolve, 220));
-
-    const emailPris = clients.some(
-      (client) => client.email.toLowerCase() === data.email.toLowerCase()
-    );
-
-    if (emailPris) {
-      showToast('Un client avec cet email existe déjà', 'error');
-      setBusy(false);
+    try {
+      const cree = await createClient(data);
+      setClients((prev) => [cree, ...prev]);
+      showToast(`${cree.nom} a été ajouté`);
+      return true;
+    } catch (error) {
+      showToast(error.message, 'error');
       return false;
+    } finally {
+      setBusy(false);
     }
-
-    const nouveau = {
-      ...data,
-      _id: creerId(),
-      createdAt: new Date().toISOString(),
-    };
-
-    setClients((prev) => [nouveau, ...prev]);
-    showToast(`${data.nom} a été ajouté`);
-    setBusy(false);
-    return true;
   }
 
   async function handleStatut(id, statut) {
+    const precedent = clients.find((client) => client._id === id);
     setClients((prev) =>
       prev.map((client) => (client._id === id ? { ...client, statut } : client))
     );
-    showToast('Statut mis à jour');
+
+    try {
+      const maj = await updateClient(id, { statut });
+      setClients((prev) => prev.map((client) => (client._id === id ? maj : client)));
+      showToast('Statut mis à jour');
+    } catch (error) {
+      if (precedent) {
+        setClients((prev) =>
+          prev.map((client) => (client._id === id ? precedent : client))
+        );
+      }
+      showToast(error.message, 'error');
+    }
   }
 
   async function handleSupprimer(id) {
@@ -65,8 +86,16 @@ export default function App() {
     if (!cible) return;
     if (!window.confirm(`Supprimer ${cible.nom} ?`)) return;
 
+    const snapshot = clients;
     setClients((prev) => prev.filter((client) => client._id !== id));
-    showToast(`${cible.nom} a été supprimé`);
+
+    try {
+      await deleteClient(id);
+      showToast(`${cible.nom} a été supprimé`);
+    } catch (error) {
+      setClients(snapshot);
+      showToast(error.message, 'error');
+    }
   }
 
   return (
@@ -79,20 +108,33 @@ export default function App() {
         <StatsBar clients={clients} />
 
         <p className="intro">
-          {total} contact{total > 1 ? 's' : ''} en portefeuille — mode démo locale (étape 4).
+          {loading
+            ? 'Chargement des contacts…'
+            : `${total} contact${total > 1 ? 's' : ''} synchronisé${total > 1 ? 's' : ''} avec l’API.`}
         </p>
 
         <div className="layout">
           <ClientForm onAjouter={handleAjouter} busy={busy} />
-          <ClientList
-            clients={clients}
-            recherche={recherche}
-            filtreStatut={filtreStatut}
-            onRecherche={setRecherche}
-            onFiltre={setFiltreStatut}
-            onStatut={handleStatut}
-            onSupprimer={handleSupprimer}
-          />
+
+          {loading ? (
+            <section className="panel list-panel">
+              <div className="panel-head">
+                <h2>Contacts</h2>
+                <p>Récupération depuis MongoDB…</p>
+              </div>
+              <LoadingGrid />
+            </section>
+          ) : (
+            <ClientList
+              clients={clients}
+              recherche={recherche}
+              filtreStatut={filtreStatut}
+              onRecherche={setRecherche}
+              onFiltre={setFiltreStatut}
+              onStatut={handleStatut}
+              onSupprimer={handleSupprimer}
+            />
+          )}
         </div>
       </div>
 
